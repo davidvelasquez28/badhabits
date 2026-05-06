@@ -100,6 +100,14 @@
     padding: 4px 10px;
     font-size: 12px;
   }
+  button.log-btn {
+    background: #8a6d3b;
+    font-size: 16px;
+    padding: 12px 20px;
+    font-weight: bold;
+    width: 100%;
+  }
+  button.log-btn:hover { background: #6f5630; }
   .habit-card {
     background: #fff;
     border: 1px solid #d4d0c4;
@@ -118,6 +126,44 @@
     font-weight: bold;
     margin: 0;
   }
+  .stats-row {
+    display: flex;
+    gap: 18px;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 12px;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+  .stat-num {
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #777;
+    margin-top: 2px;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+  .strategy-block {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+  }
+  .strategy-block h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #777;
+    margin: 14px 0 6px;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+  .strategy-block h4:first-child { margin-top: 0; }
   .big4-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -400,6 +446,20 @@
     });
   }
 
+  function countToday(log) {
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
+    return log.filter(e => {
+      const t = new Date(e.time);
+      return t.getFullYear() === y && t.getMonth() === m && t.getDate() === d;
+    }).length;
+  }
+
+  function countLast7Days(log) {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return log.filter(e => new Date(e.time).getTime() >= cutoff).length;
+  }
+
   function escapeHtml(s) {
     return (s || '').replace(/[&<>"']/g, c => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -426,57 +486,66 @@
           <button class="small danger" onclick="deleteHabit('${h.id}')">Delete</button>
         </div>
 
-        <div class="log-count">Logged <strong>${h.log.length}</strong> time${h.log.length === 1 ? '' : 's'}.</div>
-        <div style="margin: 10px 0;">
-          <button onclick="logInstance('${h.id}')">+ Log it happened</button>
+        <div class="stats-row">
+          <div class="stat">
+            <span class="stat-num">${countToday(h.log)}</span>
+            <span class="stat-label">Today</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">${countLast7Days(h.log)}</span>
+            <span class="stat-label">Last 7 days</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">${h.log.length}</span>
+            <span class="stat-label">All time</span>
+          </div>
         </div>
 
+        <button class="log-btn" onclick="logInstance('${h.id}')">+ Log it happened</button>
+
         <details>
-          <summary>Triggers — the Big 4</summary>
-          <div class="big4-grid">
-            <div>
-              <label>Who</label>
-              <input type="text" value="${escapeHtml(h.who)}"
-                     placeholder="who are you with?"
-                     onchange="updateHabit('${h.id}','who',this.value)">
+          <summary>Strategy — triggers, clean house, swap</summary>
+          <div class="strategy-block">
+            <h4>Triggers — the Big 4</h4>
+            <div class="big4-grid">
+              <div>
+                <label>Who</label>
+                <input type="text" value="${escapeHtml(h.who)}"
+                       placeholder="who are you with?"
+                       onchange="updateHabit('${h.id}','who',this.value)">
+              </div>
+              <div>
+                <label>What</label>
+                <input type="text" value="${escapeHtml(h.what)}"
+                       placeholder="what's happening right before?"
+                       onchange="updateHabit('${h.id}','what',this.value)">
+              </div>
+              <div>
+                <label>Where</label>
+                <input type="text" value="${escapeHtml(h.where)}"
+                       placeholder="where are you?"
+                       onchange="updateHabit('${h.id}','where',this.value)">
+              </div>
+              <div>
+                <label>When</label>
+                <input type="text" value="${escapeHtml(h.when)}"
+                       placeholder="time of day, day of week"
+                       onchange="updateHabit('${h.id}','when',this.value)">
+              </div>
             </div>
-            <div>
-              <label>What</label>
-              <input type="text" value="${escapeHtml(h.what)}"
-                     placeholder="what's happening right before?"
-                     onchange="updateHabit('${h.id}','what',this.value)">
-            </div>
-            <div>
-              <label>Where</label>
-              <input type="text" value="${escapeHtml(h.where)}"
-                     placeholder="where are you?"
-                     onchange="updateHabit('${h.id}','where',this.value)">
-            </div>
-            <div>
-              <label>When</label>
-              <input type="text" value="${escapeHtml(h.when)}"
-                     placeholder="time of day, day of week"
-                     onchange="updateHabit('${h.id}','when',this.value)">
-            </div>
+
+            <h4>Clean House</h4>
+            <textarea placeholder="What environmental cues will I remove? e.g. throw out the alcohol; install a blocker; move the app off home screen"
+                      onchange="updateHabit('${h.id}','cleanHouse',this.value)">${escapeHtml(h.cleanHouse)}</textarea>
+
+            <h4>Swap It</h4>
+            <textarea placeholder="What healthier behavior will I swap in — or am I dropping it entirely? e.g. when I get the urge to scroll, I'll do 10 pushups instead"
+                      onchange="updateHabit('${h.id}','swap',this.value)">${escapeHtml(h.swap)}</textarea>
           </div>
         </details>
 
         <details>
-          <summary>Clean House</summary>
-          <label>What environmental cues will I remove?</label>
-          <textarea placeholder="e.g. throw out the alcohol; install a blocker; move the app off home screen"
-                    onchange="updateHabit('${h.id}','cleanHouse',this.value)">${escapeHtml(h.cleanHouse)}</textarea>
-        </details>
-
-        <details>
-          <summary>Swap It</summary>
-          <label>What healthier behavior will I swap in — or am I dropping it entirely?</label>
-          <textarea placeholder="e.g. when I get the urge to scroll, I'll do 10 pushups instead"
-                    onchange="updateHabit('${h.id}','swap',this.value)">${escapeHtml(h.swap)}</textarea>
-        </details>
-
-        <details>
-          <summary>Log (${h.log.length})</summary>
+          <summary>History (${h.log.length})</summary>
           ${h.log.length === 0
             ? '<div class="empty">No entries yet.</div>'
             : h.log.map((entry, i) => `
