@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bad-Habit Tracker</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    background: #fafaf7;
+    color: #1a1a1a;
+    line-height: 1.55;
+  }
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+  h1 {
+    font-size: 32px;
+    margin: 0 0 6px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-style: italic;
+    color: #555;
+    margin: 0;
+  }
+  section {
+    margin-bottom: 44px;
+  }
+  h2 {
+    font-size: 22px;
+    margin: 0 0 6px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 18px 0 6px;
+    font-family: Georgia, serif;
+  }
+  .guidance {
+    background: #f1ede4;
+    border-left: 3px solid #8a6d3b;
+    padding: 12px 14px;
+    margin: 10px 0 16px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .guidance p { margin: 0 0 8px; }
+  .guidance p:last-child { margin-bottom: 0; }
+  .guidance strong { color: #5a4520; }
+  label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 12px 0 4px;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    background: #fff;
+  }
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  textarea.tall { min-height: 120px; }
+  button {
+    background: #1a1a1a;
+    color: #fafaf7;
+    border: none;
+    padding: 8px 14px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  button:hover { background: #333; }
+  button.secondary {
+    background: transparent;
+    color: #1a1a1a;
+    border: 1px solid #1a1a1a;
+  }
+  button.danger {
+    background: #8b2e2e;
+  }
+  button.small {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  .habit-card {
+    background: #fff;
+    border: 1px solid #d4d0c4;
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .habit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .habit-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+  }
+  .big4-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    margin: 8px 0;
+  }
+  .big4-grid label { margin-top: 4px; }
+  .log-entry {
+    background: #f6f4ee;
+    padding: 8px 10px;
+    margin: 6px 0;
+    border-radius: 3px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .log-time { color: #666; font-style: italic; }
+  .log-count {
+    font-size: 14px;
+    color: #555;
+    margin-top: 6px;
+  }
+  details { margin: 10px 0; }
+  details summary {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: Helvetica, Arial, sans-serif;
+    padding: 4px 0;
+  }
+  .add-habit {
+    border: 2px dashed #aaa;
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+    background: transparent;
+  }
+  .empty {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    padding: 14px;
+  }
+  .footer-note {
+    font-size: 12px;
+    color: #777;
+    text-align: center;
+    margin-top: 60px;
+    font-style: italic;
+  }
+  .why-statement {
+    background: #fff;
+    border: 1px solid #d4d0c4;
+    padding: 14px;
+    border-radius: 4px;
+    margin-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Bad-Habit Tracker</h1>
+  <p class="subtitle">Awareness is the first move. You can't change what you won't see.</p>
+</header>
+
+<!-- ============== GOAL ============== -->
+<section id="goal-section">
+  <h2>1. Your Goal</h2>
+  <div class="guidance">
+    <p>What's the one thing you want to achieve? Keep it specific enough that you'll know when you get there.</p>
+  </div>
+  <label for="goal-input">My goal</label>
+  <input type="text" id="goal-input" placeholder="e.g. lose 20 pounds, save $5,000, write every day">
+</section>
+
+<!-- ============== WHY ============== -->
+<section id="why-section">
+  <h2>2. What's My Why</h2>
+  <div class="guidance">
+    <p>According to Darren Hardy, your goal won't survive contact with reality unless you have a deep <em>why</em>. And you can't build a real why without first knowing what you actually value. Work through the four exercises below — write freely, no one's grading you. Then look for the themes that repeat across your answers. Those are your core values.</p>
+    <p><strong>From values to why:</strong> Your values are <em>what matters</em>. Your why is <em>what you'll do, become, or protect because those things matter.</em> Look at your top 3–5 values and ask: who am I trying to be, and what am I trying to honor or protect, by chasing this goal? Write that as one sentence you can come back to when things get hard.</p>
+  </div>
+
+  <h3>Exercise 1 — Peak Moments</h3>
+  <p style="font-size: 14px; margin: 4px 0 6px;">Think of 3–5 moments when you felt most alive, proud, or fulfilled. Not the biggest moments — sometimes the quietest. For each, ask: what was being honored or expressed? Connection? Creativity? Mastery? Freedom? Service? The themes that repeat are pointing at your values.</p>
+  <textarea id="peak-moments" class="tall" placeholder="Write the moments and what was being expressed in each..."></textarea>
+
+  <h3>Exercise 2 — The Frustration Test</h3>
+  <p style="font-size: 14px; margin: 4px 0 6px;">What consistently pisses you off or makes you righteously angry? Values often show up as their inverse — if injustice enrages you, justice is probably a core value. If micromanagement makes you crazy, autonomy matters to you.</p>
+  <textarea id="frustration-test" class="tall" placeholder="What gets under your skin — and what value is it pointing at?"></textarea>
+
+  <h3>Exercise 3 — The Eulogy Exercise</h3>
+  <p style="font-size: 14px; margin: 4px 0 6px;">Imagine your funeral in 40 years. What do you want people to say about who you were and how you lived? Not what you accomplished — who you were. The qualities you hope they name are your values.</p>
+  <textarea id="eulogy" class="tall" placeholder="What do you want people to say about who you were?"></textarea>
+
+  <h3>Exercise 4 — The Non-Negotiables Question</h3>
+  <p style="font-size: 14px; margin: 4px 0 6px;">What would you not compromise on, even for a lot of money or status? Those lines you won't cross are values in disguise.</p>
+  <textarea id="non-negotiables" class="tall" placeholder="What lines won't you cross, no matter what?"></textarea>
+
+  <h3>My Core Values</h3>
+  <p style="font-size: 14px; margin: 4px 0 6px;">Looking across all four exercises, what 3–5 values keep showing up?</p>
+  <textarea id="core-values" placeholder="e.g. integrity, presence, freedom, mastery, family"></textarea>
+
+  <h3>My Why</h3>
+  <p style="font-size: 14px; margin: 4px 0 6px;">Now write your why in one sentence. Connect your values to your goal: what are you really trying to honor, become, or protect by doing this?</p>
+  <textarea id="my-why" class="tall" placeholder="I want to ___ because ___"></textarea>
+</section>
+
+<!-- ============== TRACKING PRINCIPLES ============== -->
+<section id="principles-section">
+  <h2>3. How to Track (Hardy's Principles)</h2>
+  <div class="guidance">
+    <p><strong>Awareness is the whole point.</strong> Hardy asks: <em>"What am I doing that I didn't consciously choose to do, yet continue to do every day? Which of those behaviors support me? Which pull me down?"</em> The reason tracking works isn't the data — it's that the act of recording forces consciousness onto an unconscious behavior. Just knowing you'll have to write it down makes you do less of the bad thing in real time.</p>
+
+    <p><strong>Start with one habit.</strong> Pick the single bad habit most blocking your goal and track only that one. Trying to track everything at once is how people quit by week two. Once you have momentum, expand.</p>
+
+    <p><strong>Track everything related to it for one week.</strong> Hardy recommends spending the first week writing down every instance of the behavior — every drink, every scroll session, every cigarette, every dollar spent. You'll be shocked at where your time, money, or attention is actually going.</p>
+
+    <p><strong>Then keep tracking for two more weeks.</strong> Week one is shock. Weeks two and three turn that shock into awareness. You start noticing the small things you're doing right or wrong, you make small course corrections, and the results begin to compound.</p>
+
+    <p><strong>Course correction is normal.</strong> If you've derailed or feel like you're heading the wrong direction, tracking will reveal it. You're not trying to be perfect — you're trying to see clearly so you can adjust.</p>
+
+    <p><strong>Be patient.</strong> Old habits have deep roots. The longer you've had a habit, the longer the unwinding takes. Forget the "21 days" myth.</p>
+
+    <p><strong>Watch for the ripple effect.</strong> One slip tends to lead to another ("I already blew it, might as well..."). One win leads to another. Recognize the spiral when it starts so you can break it early.</p>
+  </div>
+</section>
+
+<!-- ============== BAD HABITS ============== -->
+<section id="habits-section">
+  <h2>4. My Bad Habits</h2>
+  <div class="guidance">
+    <p>This is the core of the app. Each habit you add holds <em>everything</em> related to it: your triggers (the Big 4), your clean-house actions, your swap, and a running log of every time it happens.</p>
+
+    <p><strong>Identify your triggers — the Big 4.</strong> For every bad habit, map the <em>who</em>, <em>what</em>, <em>where</em>, and <em>when</em> that prompts it. <em>Who</em> are you with? <em>What</em> are you doing right before? <em>Where</em> are you? <em>When</em> in the day does it happen? You can't disrupt a pattern you haven't mapped.</p>
+
+    <p><strong>Clean house.</strong> Eliminate the environmental cues. Drink too much? Get the alcohol out of the house. Watch porn? Install blockers on your devices. Doomscroll? Move the apps off the home screen, or delete them. Make the bad habit harder to access than your willpower at 11 p.m.</p>
+
+    <p><strong>Swap it.</strong> Replace the habit with a healthier behavior triggered by the same cue — or drop-kick it entirely. The swap works best <em>after</em> you've cleaned house, because the trigger has less force.</p>
+
+    <p style="margin-top: 10px;"><strong>Reminder:</strong> Hardy says start with <em>one</em>. Add the others to the list if you want, but pick one to actively track this week.</p>
+  </div>
+
+  <div id="habits-list">
+    <div class="empty" id="habits-empty">No habits yet. Add the first one below.</div>
+  </div>
+
+  <div class="add-habit">
+    <button onclick="addHabit()">+ Add a Bad Habit</button>
+  </div>
+</section>
+
+<!-- ============== REWARDS ============== -->
+<section id="rewards-section">
+  <h2>5. Rewards</h2>
+  <div class="guidance">
+    <p>Acknowledge yourself for holding the new behavior. Bigger milestones, bigger celebrations. One trap to avoid: don't make the reward the bad habit you're trying to drop.</p>
+  </div>
+
+  <label for="reward-daily">Daily reward (small)</label>
+  <input type="text" id="reward-daily" placeholder="e.g. a good coffee, 20 min of reading">
+
+  <label for="reward-weekly">Weekly reward (medium)</label>
+  <input type="text" id="reward-weekly" placeholder="e.g. dinner out, a movie, a long walk somewhere new">
+
+  <label for="reward-monthly">Monthly reward (bigger)</label>
+  <input type="text" id="reward-monthly" placeholder="e.g. concert tickets, a weekend trip, something you've been putting off">
+</section>
+
+<p class="footer-note">Your data is saved locally in your browser. Nothing is sent anywhere.</p>
+
+<script>
+  // ---------- storage ----------
+  const STORAGE_KEY = 'bad-habit-tracker-v1';
+
+  function saveAll() {
+    const data = {
+      goal: document.getElementById('goal-input').value,
+      peak: document.getElementById('peak-moments').value,
+      frustration: document.getElementById('frustration-test').value,
+      eulogy: document.getElementById('eulogy').value,
+      nonNegotiables: document.getElementById('non-negotiables').value,
+      coreValues: document.getElementById('core-values').value,
+      why: document.getElementById('my-why').value,
+      rewardDaily: document.getElementById('reward-daily').value,
+      rewardWeekly: document.getElementById('reward-weekly').value,
+      rewardMonthly: document.getElementById('reward-monthly').value,
+      habits: habits
+    };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.error('save failed', e);
+    }
+  }
+
+  function loadAll() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      document.getElementById('goal-input').value = data.goal || '';
+      document.getElementById('peak-moments').value = data.peak || '';
+      document.getElementById('frustration-test').value = data.frustration || '';
+      document.getElementById('eulogy').value = data.eulogy || '';
+      document.getElementById('non-negotiables').value = data.nonNegotiables || '';
+      document.getElementById('core-values').value = data.coreValues || '';
+      document.getElementById('my-why').value = data.why || '';
+      document.getElementById('reward-daily').value = data.rewardDaily || '';
+      document.getElementById('reward-weekly').value = data.rewardWeekly || '';
+      document.getElementById('reward-monthly').value = data.rewardMonthly || '';
+      habits = data.habits || [];
+    } catch (e) {
+      console.error('load failed', e);
+    }
+  }
+
+  // ---------- habits ----------
+  let habits = [];
+
+  function addHabit() {
+    habits.push({
+      id: Date.now().toString(),
+      name: '',
+      who: '',
+      what: '',
+      where: '',
+      when: '',
+      cleanHouse: '',
+      swap: '',
+      log: []
+    });
+    saveAll();
+    renderHabits();
+  }
+
+  function deleteHabit(id) {
+    if (!confirm('Delete this habit and all its logs?')) return;
+    habits = habits.filter(h => h.id !== id);
+    saveAll();
+    renderHabits();
+  }
+
+  function updateHabit(id, field, value) {
+    const h = habits.find(h => h.id === id);
+    if (!h) return;
+    h[field] = value;
+    saveAll();
+  }
+
+  function logInstance(id) {
+    const h = habits.find(h => h.id === id);
+    if (!h) return;
+    const note = prompt('Quick note (optional) — what triggered it? Where were you? How are you feeling?');
+    if (note === null) return; // cancelled
+    h.log.unshift({
+      time: new Date().toISOString(),
+      note: note || ''
+    });
+    saveAll();
+    renderHabits();
+  }
+
+  function deleteLogEntry(habitId, index) {
+    const h = habits.find(h => h.id === habitId);
+    if (!h) return;
+    h.log.splice(index, 1);
+    saveAll();
+    renderHabits();
+  }
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      month: 'short', day: 'numeric',
+      hour: 'numeric', minute: '2-digit'
+    });
+  }
+
+  function escapeHtml(s) {
+    return (s || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
+
+  function renderHabits() {
+    const list = document.getElementById('habits-list');
+    const empty = document.getElementById('habits-empty');
+
+    if (habits.length === 0) {
+      list.innerHTML = '<div class="empty" id="habits-empty">No habits yet. Add the first one below.</div>';
+      return;
+    }
+
+    list.innerHTML = habits.map(h => `
+      <div class="habit-card" data-id="${h.id}">
+        <div class="habit-header">
+          <input type="text"
+                 value="${escapeHtml(h.name)}"
+                 placeholder="Name this habit (e.g. doomscrolling, drinking, junk food)"
+                 style="font-size:18px; font-weight:bold; border:none; background:transparent; padding:4px 0; flex:1;"
+                 onchange="updateHabit('${h.id}','name',this.value)">
+          <button class="small danger" onclick="deleteHabit('${h.id}')">Delete</button>
+        </div>
+
+        <div class="log-count">Logged <strong>${h.log.length}</strong> time${h.log.length === 1 ? '' : 's'}.</div>
+        <div style="margin: 10px 0;">
+          <button onclick="logInstance('${h.id}')">+ Log it happened</button>
+        </div>
+
+        <details>
+          <summary>Triggers — the Big 4</summary>
+          <div class="big4-grid">
+            <div>
+              <label>Who</label>
+              <input type="text" value="${escapeHtml(h.who)}"
+                     placeholder="who are you with?"
+                     onchange="updateHabit('${h.id}','who',this.value)">
+            </div>
+            <div>
+              <label>What</label>
+              <input type="text" value="${escapeHtml(h.what)}"
+                     placeholder="what's happening right before?"
+                     onchange="updateHabit('${h.id}','what',this.value)">
+            </div>
+            <div>
+              <label>Where</label>
+              <input type="text" value="${escapeHtml(h.where)}"
+                     placeholder="where are you?"
+                     onchange="updateHabit('${h.id}','where',this.value)">
+            </div>
+            <div>
+              <label>When</label>
+              <input type="text" value="${escapeHtml(h.when)}"
+                     placeholder="time of day, day of week"
+                     onchange="updateHabit('${h.id}','when',this.value)">
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>Clean House</summary>
+          <label>What environmental cues will I remove?</label>
+          <textarea placeholder="e.g. throw out the alcohol; install a blocker; move the app off home screen"
+                    onchange="updateHabit('${h.id}','cleanHouse',this.value)">${escapeHtml(h.cleanHouse)}</textarea>
+        </details>
+
+        <details>
+          <summary>Swap It</summary>
+          <label>What healthier behavior will I swap in — or am I dropping it entirely?</label>
+          <textarea placeholder="e.g. when I get the urge to scroll, I'll do 10 pushups instead"
+                    onchange="updateHabit('${h.id}','swap',this.value)">${escapeHtml(h.swap)}</textarea>
+        </details>
+
+        <details>
+          <summary>Log (${h.log.length})</summary>
+          ${h.log.length === 0
+            ? '<div class="empty">No entries yet.</div>'
+            : h.log.map((entry, i) => `
+                <div class="log-entry">
+                  <div>
+                    <div class="log-time">${formatTime(entry.time)}</div>
+                    ${entry.note ? `<div>${escapeHtml(entry.note)}</div>` : ''}
+                  </div>
+                  <button class="small secondary" onclick="deleteLogEntry('${h.id}',${i})">×</button>
+                </div>
+              `).join('')
+          }
+        </details>
+      </div>
+    `).join('');
+  }
+
+  // ---------- wire up auto-save on text fields ----------
+  document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+    if (el.id) {
+      el.addEventListener('input', saveAll);
+    }
+  });
+
+  // ---------- init ----------
+  loadAll();
+  renderHabits();
+</script>
+
+</body>
+</html>
